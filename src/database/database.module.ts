@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserModel } from 'src/user/model/user.model';
 
 @Module({
     imports:[
@@ -15,6 +16,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
               database: configService.get('POSTGRES_DB'),
               autoLoadModels: true,
               synchronize: true,
+              models:[
+                UserModel
+              ]
             }),
             inject: [ConfigService],
         })
