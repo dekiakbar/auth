@@ -6,6 +6,8 @@ import { AccountProviderEnum, SignInDto } from '../dto/sign-in.dto';
 import { UsersService } from 'src/user/service/users.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { SignInResponseDto } from 'src/user/dto/sign-in-response.dto';
+import { JwtPayloadInterface } from '../interface/jwt-payload.interface';
+import { RoleEnum } from 'src/user/enum/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -41,13 +43,18 @@ export class AuthService {
       user = await this.userService.create(data);
     }
 
-    const accessToken = this.jwtService.sign({ name: user.name });
+    const jwtPayload: JwtPayloadInterface = {
+      name: user.name,
+      roles: user.roles.map((role) => role.code),
+    };
+
+    const accessToken = this.jwtService.sign(jwtPayload);
     const { createdAt, updatedAt, ...normalizedUser } = user.toJSON();
     const response: SignInResponseDto = {
       ...normalizedUser,
       accessToken: accessToken,
     };
-    
+
     return response;
   }
 

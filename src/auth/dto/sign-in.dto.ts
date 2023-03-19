@@ -1,10 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsString,
-  ValidateNested
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 
 export class SignInUserDto {
   @IsNotEmpty()

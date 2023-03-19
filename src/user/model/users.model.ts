@@ -1,5 +1,13 @@
-import { Column, Index, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsToMany,
+  Column,
+  Index,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import { AccountProviderEnum } from 'src/auth/dto/sign-in.dto';
+import { UserRoleModel } from './userRole.model';
+import { RolesModel } from './roles.model';
 
 @Table({
   tableName: 'users',
@@ -22,4 +30,7 @@ export class UsersModel extends Model {
 
   @Column
   providerId: string;
+
+  @BelongsToMany(() => RolesModel, () => UserRoleModel)
+  roles: RolesModel[];
 }

@@ -8,6 +8,8 @@ import { ConfigModule } from '@nestjs/config';
 import { ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { GoogleOAuth2ClientProvider } from './provider/googe-auth.provider';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './guard/roles.guard';
 @Module({
   imports: [
     UsersModule,
@@ -21,7 +23,15 @@ import { GoogleOAuth2ClientProvider } from './provider/googe-auth.provider';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, JwtStrategy, GoogleOAuth2ClientProvider],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    GoogleOAuth2ClientProvider,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}
