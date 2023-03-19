@@ -7,7 +7,6 @@ import { UsersService } from 'src/user/service/users.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { SignInResponseDto } from 'src/user/dto/sign-in-response.dto';
 import { JwtPayloadInterface } from '../interface/jwt-payload.interface';
-import { RoleEnum } from 'src/user/enum/role.enum';
 
 @Injectable()
 export class AuthService {
