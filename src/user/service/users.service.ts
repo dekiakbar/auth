@@ -26,7 +26,7 @@ export class UsersService {
 
     // assign role when user is created.
     const user = await this.assignRole(newUser);
-    console.log(user);
+
     return user;
   }
 
