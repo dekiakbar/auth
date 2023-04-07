@@ -1,11 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { CreateUserDto } from '../dto/user/create-user.dto';
+import { UpdateUserDto } from '../dto/user/update-user.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { UsersModel } from '../model/users.model';
 import { RolesService } from './roles.service';
 import { RolesModel } from '../model/roles.model';
 import { RoleEnum } from '../enum/role.enum';
+import { PageDto } from 'src/common/dto/page.dto';
+import { PageOptionsDto } from 'src/common/dto/page-options.dto';
+import { PageMetaDto } from '../../common/dto/page-meta-dto';
+import { UserResponseDto } from '../dto/user/user-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -30,8 +34,30 @@ export class UsersService {
     return user;
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async getUsers(
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<UserResponseDto>> {
+    const users = await this.userModel.findAll({
+      limit: pageOptionsDto.limit,
+      offset: pageOptionsDto.offset,
+      order: [['createdAt', pageOptionsDto.order]],
+      include: [
+        {
+          model: RolesModel,
+          attributes: ['code'],
+        },
+      ],
+    });
+
+    const itemCount = users.length;
+    const pageMetaDto = new PageMetaDto({ pageOptionsDto, itemCount });
+
+    const usersObject = users.map((user) => {
+      const userDto = new UserResponseDto(user);
+      return userDto;
+    });
+
+    return new PageDto(usersObject, pageMetaDto);
   }
 
   async findOne(id: number) {
@@ -48,18 +74,32 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException('The user is not exit.');
+      throw new NotFoundException('The user is not exist.');
     }
 
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async getDetail(id: number): Promise<UserResponseDto> {
+    const user = await this.findOne(id);
+    const response = new UserResponseDto(user);
+
+    return response;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async update(
+    id: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
+    const user = await this.findOne(id);
+    const updatedUser = await user.update(updateUserDto);
+    const userResponse = new UserResponseDto(updatedUser);
+    return userResponse;
+  }
+
+  async remove(id: number) {
+    const user = await this.findOne(id);
+    await user.destroy();
   }
 
   async findUserByEmail(email: string): Promise<UsersModel> {

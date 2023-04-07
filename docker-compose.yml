@@ -1,9 +1,24 @@
 version: '3'
 services:
   db:
-    hostname: "${POSTGRES_HOST}" 
+    hostname: "${POSTGRES_HOST}"
     image: postgres:14.5-bullseye
     env_file:
       - .env
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    restart: on-failure
+  node:
+    image: node:18.14.2-slim
+    depends_on:
+      - db
+    env_file:
+      - .env
+    ports:
+      - "${PORT}:${PORT}"
+    command: "npm run start:dev"
+    working_dir: '/app'
+    # restart: on-failure
+    volumes:
+      - './:/app'
+    

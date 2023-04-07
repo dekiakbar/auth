@@ -4,6 +4,7 @@ import {
   ExecutionContext,
   Injectable,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { RoleEnum } from 'src/user/enum/role.enum';
@@ -26,6 +27,11 @@ export class RolesGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
+
+    if (!request.headers['authorization']) {
+      throw new UnauthorizedException();
+    }
+
     const jwtToken = request.headers['authorization'].split(' ')[1];
     const decodedToken = this.decodeJwt(jwtToken);
 

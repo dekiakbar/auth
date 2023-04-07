@@ -4,8 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginTicket, OAuth2Client } from 'google-auth-library';
 import { AccountProviderEnum, SignInDto } from '../dto/sign-in.dto';
 import { UsersService } from 'src/user/service/users.service';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { SignInResponseDto } from 'src/user/dto/sign-in-response.dto';
+import { CreateUserDto } from 'src/user/dto/user/create-user.dto';
+import { SignInResponseDto } from 'src/auth/dto/sign-in-response.dto';
 import { JwtPayloadInterface } from '../interface/jwt-payload.interface';
 
 @Injectable()
@@ -17,14 +17,14 @@ export class AuthService {
     private readonly userService: UsersService,
   ) {}
 
-  async signIn(signInDto: SignInDto): Promise<any> {
+  async signIn(signInDto: SignInDto): Promise<SignInResponseDto> {
     // handle signin using gmail
     if (signInDto.account.provider === AccountProviderEnum.GOOGLE) {
       const result = await this.processGmailSignIn(signInDto);
       return result;
     }
 
-    return false;
+    throw BadRequestException;
   }
 
   async processGmailSignIn(signInDto: SignInDto): Promise<SignInResponseDto> {
@@ -43,16 +43,13 @@ export class AuthService {
     }
 
     const jwtPayload: JwtPayloadInterface = {
+      id: user.id,
       name: user.name,
-      roles: user.roles.map((role) => role.code),
+      roles: user.roleModel.map((role) => role.code),
     };
 
     const accessToken = this.jwtService.sign(jwtPayload);
-    const { createdAt, updatedAt, ...normalizedUser } = user.toJSON();
-    const response: SignInResponseDto = {
-      ...normalizedUser,
-      accessToken: accessToken,
-    };
+    const response = new SignInResponseDto(user, accessToken);
 
     return response;
   }

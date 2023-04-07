@@ -32,13 +32,13 @@ export class UsersModel extends Model {
   providerId: string;
 
   @BelongsToMany(() => RolesModel, () => UserRoleModel)
-  roles: RolesModel[];
+  roleModel: RolesModel[];
 
   // Only include the code property of each role in the output
-  toJSON() {
-    const values = Object.assign({}, this.get());
-    values.roles = values.roles.map((role) => role.code);
+  // toJSON() {
+  //   const values = Object.assign({}, this.get());
+  //   values.roles = values?.roles?.map((role) => role.code);
 
-    return values;
-  }
+  //   return values;
+  // }
 }

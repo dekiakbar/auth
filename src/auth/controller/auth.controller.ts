@@ -1,11 +1,21 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { SignInDto } from '../dto/sign-in.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from 'src/user/service/users.service';
-import { Roles } from '../decorator/roles.decorator';
-import { RoleEnum } from 'src/user/enum/role.enum';
+import { UserResponseDto } from 'src/user/dto/user/user-response.dto';
+import { SignInResponseDto } from '../dto/sign-in-response.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiUserResponse } from 'src/user/decorator/api-user-response.decorator';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -14,21 +24,15 @@ export class AuthController {
   ) {}
 
   @Post('/signin')
-  create(@Body() signInDto: SignInDto) {
+  create(@Body() signInDto: SignInDto): Promise<SignInResponseDto> {
     return this.authService.signIn(signInDto);
   }
 
+  @ApiUserResponse()
+  @ApiBearerAuth('Bearer')
   @UseGuards(AuthGuard('jwt'))
-  @Roles(RoleEnum.USER)
-  @Post('/user')
-  user(@Request() req) {
-    return req.user;
-  }
-
-  @UseGuards(AuthGuard('jwt'))
-  @Roles(RoleEnum.ADMIN)
-  @Post('/admin')
-  admin(@Request() req) {
-    return req.user;
+  @Get('/me')
+  getDetail(@Request() req): Promise<UserResponseDto> {
+    return this.userService.getDetail(req.user.id);
   }
 }
