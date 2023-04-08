@@ -20,7 +20,7 @@ export class SignInResponseDto extends PartialType(UserResponseDto) {
     this.providerId = user.providerId;
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;
-    this.roles = user.roleModel.map((role) => role.code as RoleEnum);
+    this.roles = user.roles.map((role) => role.code as RoleEnum);
     this.accessToken = accessToken;
   }
 }

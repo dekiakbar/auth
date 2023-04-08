@@ -8,7 +8,7 @@ services:
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     restart: on-failure
-  node:
+  be:
     image: node:18.14.2-slim
     depends_on:
       - db
@@ -16,9 +16,9 @@ services:
       - .env
     ports:
       - "${PORT}:${PORT}"
-    command: "npm run start:dev"
+    command: >      
+      bash -c "npm run build && npm run start:prod"
     working_dir: '/app'
-    # restart: on-failure
+    restart: on-failure
     volumes:
       - './:/app'
-    
