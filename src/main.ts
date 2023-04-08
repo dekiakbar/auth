@@ -9,12 +9,10 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   if(process.env.ENABLE_SWAGGER == "1"){
-    console.log("swag "+process.env.ENABLE_SWAGGER);
     SetupSwagger(app);
   }
 
   if(process.env.ENABLE_CORS == "1"){
-    console.log("cors "+process.env.ENABLE_CORS);
     app.enableCors();
   }
 
