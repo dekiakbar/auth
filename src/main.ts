@@ -8,11 +8,11 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
-  if(process.env.ENABLE_SWAGGER == "1"){
+  if (process.env.ENABLE_SWAGGER == '1') {
     SetupSwagger(app);
   }
 
-  if(process.env.ENABLE_CORS == "1"){
+  if (process.env.ENABLE_CORS == '1') {
     app.enableCors();
   }
 
